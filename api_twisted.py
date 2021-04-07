@@ -67,6 +67,7 @@ def cbBody(body):
     logger.info('Monitoring data:')
     monitoring_data = "Game name: {0}, Started at: {1}, Viewer count: {2}".format(data['game_name'], data['started_at'], data['viewer_count'])
     logger.info('Modeling data: ' + monitoring_data)
+    reactor.stop()
 
 
 @inlineCallbacks
@@ -75,7 +76,6 @@ def main():
     agent = Agent(reactor, contextFactory)
     d = yield agent.request("GET", URL+channels[0], Headers(headers))
     display(d)
-    # d.addCallback(lambda ignored: reactor.stop())
 
 
 if __name__ == '__main__':
