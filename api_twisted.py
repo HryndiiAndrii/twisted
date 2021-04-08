@@ -79,7 +79,7 @@ def main():
     contextFactory = WebClientContextFactory()
     agent = Agent(reactor, contextFactory)
     d = gatherResults([get_response(agent, URL + channels[0])])
-    d.addBoth(lambda ignored: reactor.stop())
+    d.addBoth(lambda stop: reactor.stop())
 
 
 if __name__ == '__main__':
