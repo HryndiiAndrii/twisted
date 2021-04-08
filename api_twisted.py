@@ -2,7 +2,7 @@ import json
 import logging
 
 from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import inlineCallbacks, gatherResults
 from twisted.internet.ssl import ClientContextFactory
 from twisted.web.client import Agent, readBody
 from twisted.web.http_headers import Headers
@@ -67,15 +67,19 @@ def cbBody(body):
     logger.info('Monitoring data:')
     monitoring_data = "Game name: {0}, Started at: {1}, Viewer count: {2}".format(data['game_name'], data['started_at'], data['viewer_count'])
     logger.info('Modeling data: ' + monitoring_data)
-    reactor.stop()
 
 
 @inlineCallbacks
+def get_response(agent, url):
+    response = yield agent.request("GET", url, Headers(headers))
+    display(response)
+
+
 def main():
     contextFactory = WebClientContextFactory()
     agent = Agent(reactor, contextFactory)
-    d = yield agent.request("GET", URL+channels[0], Headers(headers))
-    display(d)
+    d = gatherResults([get_response(agent, URL + channels[0])])
+    d.addBoth(lambda ignored: reactor.stop())
 
 
 if __name__ == '__main__':
